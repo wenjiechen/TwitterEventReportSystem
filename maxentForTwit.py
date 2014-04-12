@@ -1,9 +1,9 @@
 import nltk
 
 train = [
-     (dict(sunny=1,rainy=1,windy=1), 'sport'),
-     (dict(sunny=1,rainy=1,windy=1), 'weather'),
-     (dict(sunny=1,rainy=1,windy=0), 'others'),
+     (dict(rainy=1,sunny=1,windy=1), 'sport'),
+     (dict(rainy=1,windy=1,sunny=1), 'weather'),
+     (dict(windy=0,sunny=1,rainy=1), 'others'),
      (dict(sunny=0,rainy=1,windy=1), 'weather'),
      (dict(sunny=0,rainy=1,windy=1), 'sport'),
      (dict(sunny=0,rainy=0,windy=1), 'others'),
