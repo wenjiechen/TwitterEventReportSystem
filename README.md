@@ -11,8 +11,6 @@ Design
 Rank twitters  April 12 2014
 wenjie chen
 
-install NLTK: sudo pip install -U numpy (optional), sudo pip install -U pyyaml nltk
-
 1. collectTwit.py is a few modification based on twit.py. It collects twitter messages into a 'trainData.csv' or 'testData.csv' using '|' as delimiter. 
 
 2. maxentropyDemo.py is a demo for using maximum entropy classifier
@@ -21,7 +19,7 @@ install NLTK: sudo pip install -U numpy (optional), sudo pip install -U pyyaml n
 
 in 'data' folder, trainData_topic_party.csv is used to model maxentropy classifier, whose event 1 is 'party', 'testData_beer_party_fire.csv' is collection of twitters containing key word 'beer', 'party' or 'fire'. The rank result gives top 10 twitters indicating where has a party.
 
-Run command: python rank.py
+Run command: `python rank.py`
 
 ATTENTION: in trainData.csv, the delimiter is ',', but in testData.csv, the delimiter is '|'
 Using '|' is better, because a twitter message might have ',', which leads to uncorrectly separation. But the trainData is collected two days ago. I'll fix it when create new train data at the next time.
