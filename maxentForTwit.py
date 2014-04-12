@@ -30,7 +30,7 @@ def NaiveBayesClassifier():
 
 def print_maxent_test_header():
 	print ' '*11+''.join(['      test[%s]  ' % i for i in range(len(test))])
-	print ' '*11+'     p(x)  p(y)'*len(test)
+	print ' '*11+'     p(weather)  p( others) p(sport)'*len(test)
 	print '-'*(11+15*len(test))
 
 def test_maxent(algorithm):
@@ -43,7 +43,7 @@ def test_maxent(algorithm):
 		return
 	for featureset in test:
 		pdist = classifier.prob_classify(featureset)
-		print '%8.2f %6.2f' %(pdist.prob('weather'),pdist.prob('others')),
+		print '%8.2f %6.2f %6.2f' %(pdist.prob('weather'),pdist.prob('others'),pdist.prob('sport'))
 	print ''
 	
 def main():
