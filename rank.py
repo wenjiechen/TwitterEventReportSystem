@@ -19,7 +19,7 @@ class Record:
         self.probability = 0.0        # relevance to the label '1'
         self.impact_score = 0.0       # = probability * (followers+1)
         # get the set of unique words contained in a twitter message
-        self.message_words = set(wordpunct_tokenize(self.message.lower()))
+        self.message_words = set(wordpunct_tokenize(self.message.replace('\r',' ').lower()))
         # get rid of punctuation tokens, numbers, and single letters.
         self.message_words = [w for w in self.message_words if re.search('[a-zA-Z]', w) and len(w) > 1]
 
@@ -60,7 +60,7 @@ class Ranker:
         # read csv file, create records list
         with open(self.training_data_csv,'rb') as csvfile:
             for line in csvfile.readlines():
-                fields = line.split(',')
+                fields = line.split(',')  #### train data uses ',' as delimiter
                 if len(fields) == 3:
                     record = Record(fields[0],fields[1],fields[2])
                     records_list.append(record)
@@ -92,7 +92,7 @@ class Ranker:
     def __get_classify_probability(self,records_list,algorithm='GIS'):
         try:
             classifier = nltk.classify.MaxentClassifier.train(
-			self.training_data, algorithm, trace = 0, max_iter=100)
+			self.training_data, algorithm, trace = 0, max_iter=200)
         except Exception as e:
             print 'Error: %r' %e
             return
@@ -113,7 +113,7 @@ class Ranker:
         records_list = []
         with open(self.test_data_csv,'rb') as csvfile:
             for line in csvfile.readlines():
-                fields = line.split(',')
+                fields = line.split('|')    #### train data uses ',' as delimiter
                 if len(fields) == 3:
                     record = Record(fields[0],fields[1],fields[2])
                     record.get_features_set(self.features_set)
@@ -123,7 +123,10 @@ class Ranker:
         self.__get_classify_probability(records_list)
         records_list = sorted(records_list[:], key=lambda record : record.probability,reverse=True)
         for r in records_list:
-            r.impact_score = r.probability * (float(r.followers)+1)
+            try:
+                r.impact_score = r.probability * (float(r.followers)+1)
+            except Exception as e:
+                r.impact_score = r.probability
         self.classified_records_list = records_list
 
         # get topN impact score record
@@ -144,10 +147,10 @@ class Ranker:
             print 'impact score: ', r.impact_score
 
 if __name__=='__main__':
-    training_data_csv = 'trainData_topic_party.csv'
-    test_data_csv = 'testData_topics_beer_party.csv'
+    training_data_csv = 'data/trainData_topic_party.csv'
+    test_data_csv = 'data/testData_beer_party_fire.csv'
     min_len = 1
     min_frequency = 3
-    topNum = 5
+    topNum = 10
     ranker = Ranker(training_data_csv,test_data_csv,topNum=topNum)
     ranker.demo_print_topN_message()
