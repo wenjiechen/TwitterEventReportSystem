@@ -19,7 +19,7 @@ auth1.set_access_token(access_token_key,access_token_secret)
 api = tweepy.API(auth1)
 
 center = {'lat' : 40.7300, 'long' : -73.9950} 		# Washington Square Park
-setTerms = ['party']								# Keywords
+setTerms = ['beer','party']								# Keywords
 setLanguages = ['en']								# Language Filter
 collectTrainningData = True                         # collect data for training
 #**********************************************************************************************************************
@@ -91,7 +91,7 @@ class StreamListener(tweepy.StreamListener):
                     # text_file.close()
 
                     label = 1 # used for trainning classfilier
-                    csvText = 'testTwitter.csv'
+                    csvText = 'testData.csv'
                     if collectTrainningData:
                         csvText = 'trainData.csv'
                     if (self.tweetCount == 0):
