@@ -19,9 +19,9 @@ auth1.set_access_token(access_token_key,access_token_secret)
 api = tweepy.API(auth1)
 
 center = {'lat' : 40.7300, 'long' : -73.9950} 		# Washington Square Park
-setTerms = ["beer"]									# Keywords
+setTerms = ['party']									# Keywords
 setLanguages = ['en']								# Language Filter
-
+collectTrainningData = true
 #**********************************************************************************************************************
 #**********************************************************************************************************************
 # Might need to find a way to search old tweets and not use the streaming api
@@ -60,54 +60,59 @@ class StreamListener(tweepy.StreamListener):
 					text = tweet.text
 					favs = tweet.favorite_count
 					print "Text: " + text + "\n" + "Distance: " + str(d) + " mi" + "\n" + "Fav: " + str(favs) + "\n" + "Retweets: " + str(retweets)
-				
+
 					user = api.get_user(tweet.user.screen_name)
 					if user:
 						username = user.screen_name
 						followers = user.followers_count
-						print "User: " + username + "\n" + "Followers: " + str(followers) 
-					
+						print "User: " + username + "\n" + "Followers: " + str(followers)
+
 					for hashtag in tweet.entities['hashtags']:
 						hashtags = hashtags + hashtag['text'] + " "
 					if hashtags:
 						print "Hashtags: " + hashtags
-				
+
 					for url in tweet.entities['urls']:
 						urls = urls + url['expanded_url'] + " "
 					if urls:
 						print "URLs: " + urls
-						
-						
+
+
 					print "\n"
-				
-					fileText = str(tweet.created_at) + ".txt"
-					text_file = open(fileText,"w")
-					text_file.write("Text: %s\n" % text.encode('utf-8'))
-					text_file.write("Hashtags: %s\n" % hashtags.encode('utf-8'))
-					text_file.write("Favs: %s\n" % favs)
-					text_file.write("Retweets: %s\n" % retweets)
-					text_file.write("User: %s\n" % username.encode('utf-8'))
-					text_file.write("Followers: %s\n" % followers)
-					text_file.close()
-					
+
+					# fileText = str(tweet.created_at) + ".txt"
+					# text_file = open(fileText,"w")
+					# text_file.write("Text: %s\n" % text.encode('utf-8'))
+					# text_file.write("Hashtags: %s\n" % hashtags.encode('utf-8'))
+					# text_file.write("Favs: %s\n" % favs)
+					# text_file.write("Retweets: %s\n" % retweets)
+					# text_file.write("User: %s\n" % username.encode('utf-8'))
+					# text_file.write("Followers: %s\n" % followers)
+					# text_file.close()
+
+					label = 1 # used for trainning classfilier
+					csvText
 					if (self.tweetCount == 0):
-						csvText = "Output.csv"
+						if collectTrainningData:
+							csvText = "TrainData.csv"
+                        else:
+                            csvText = "Output.csv"
 						with open(csvText,'w') as outfile:
 						    writer = csv.writer(outfile)
-						    writer.writerow((text.encode('utf-8'),hashtags.encode('utf-8'),followers))
+						    writer.writerow((label,text.encode('utf-8'),hashtags.encode('utf-8'),followers))
 					else:
-						fd = open('Output.csv','a')
+						fd = open(csvText,'a')
 						writer = csv.writer(fd)
-						writer.writerow((text.encode('utf-8'),hashtags.encode('utf-8'),followers))
+						writer.writerow((label,text.encode('utf-8'),hashtags.encode('utf-8'),followers))
 						fd.close()
-					
-					
-					
+
+
+
 		else:
 			print("Done Collecting Tweets!\n")
-			sys.exit()	
+			sys.exit()
 	#end on_status
-					
+
 	def on_error(self, status_code):
 		print "Error: " + repr(status_code)
 		return False
