@@ -188,5 +188,5 @@ if __name__=='__main__':
     min_frequency = 3
     topNum = 10
     ranker = Ranker(training_data_csv,test_data_csv,topNum=topNum)
-    # ranker.demo_print_topN_message()
-    ranker.classify_live_stream_demo()
+    ranker.demo_print_topN_message()
+    # ranker.classify_live_stream_demo()
