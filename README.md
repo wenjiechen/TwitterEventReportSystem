@@ -4,7 +4,7 @@ Configration
 ---
 * install tweepy: `pip install tweepy`
 * install [NLTK](http://www.nltk.org/index.html): `sudo pip install -U numpy` (optional), `sudo pip install -U pyyaml nltk`
-
+* Run command: `python rank.py`
 
 Design
 ---
@@ -19,7 +19,6 @@ wenjie chen
 
 in 'data' folder, trainData_topic_party.csv is used to model maxentropy classifier, whose event 1 is 'party', 'testData_beer_party_fire.csv' is collection of twitters containing key word 'beer', 'party' or 'fire'. The rank result gives top 10 twitters indicating where has a party.
 
-Run command: `python rank.py`
 
 ATTENTION: in trainData.csv, the delimiter is ',', but in testData.csv, the delimiter is '|'
 Using '|' is better, because a twitter message might have ',', which leads to uncorrectly separation. But the trainData is collected two days ago. I'll fix it when create new train data at the next time.
