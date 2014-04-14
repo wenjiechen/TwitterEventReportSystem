@@ -49,6 +49,7 @@ class Ranker:
         self.classified_records_list = []   # classified twitter records
         self.topN_records = []              # records having the top N impact score
         self.topNum = topNum                # the length of topN_records list
+        self.classifier = None
         self.nonsense_words = ['and', 'the','http','co']    # nonsense words needed to be eliminated from features_set
         self.min_len = min_len              # the length of words in features_set are grater than min_len
         self.min_frequency = min_frequency  # the frequency of words in features_set are greater than min_frequency
@@ -91,14 +92,15 @@ class Ranker:
     # probability of event 1 + probability of event 0 = 1
     def __get_classify_probability(self,records_list,algorithm='GIS'):
         try:
-            classifier = nltk.classify.MaxentClassifier.train(
-			self.training_data, algorithm, trace = 0, max_iter=200)
+            if self.classifier==None:
+                self.classifier = nltk.classify.MaxentClassifier.train(
+	       		self.training_data, algorithm, trace = 0, max_iter=200)
         except Exception as e:
             print 'Error: %r' %e
             return
 
         for record in records_list:
-            probability = classifier.prob_classify(record.features_set)
+            probability = self.classifier.prob_classify(record.features_set)
             record.probability = probability.prob('1')
             # print record.message
             # print '%6.2f, %6.2f' %(probability.prob('1'),probability.prob('0'))
@@ -140,11 +142,44 @@ class Ranker:
 
     # demonstrate getting top 5 messages related to event 1
     def demo_print_topN_message(self):
-        ranker.score_test_data()
+        self.score_test_data()
         print 'top ',topNum,' impact score twitter messages are: '
         for r in ranker.topN_records:
             print r.message
             print 'impact score: ', r.impact_score
+
+    def classify_message_live_stream(self, message_row, algorithm = 'GIS'):
+        # contruct classifier
+        if len(self.training_data)== 0 :
+            self.__construct_training_data()
+        try:
+            if self.classifier==None:
+                self.classifier = nltk.classify.MaxentClassifier.train(
+                self.training_data, algorithm, trace = 0, max_iter=200)
+        except Exception as e:
+            print 'Error: %r' %e
+            return
+        # get message's features set
+        # classify message
+        fields = message_row.split('|')
+        try:
+            record = Record(fields[0],fields[1],fields[2])
+            record.get_features_set(self.features_set)
+            probability = self.classifier.prob_classify(record.features_set)
+            record.probability = probability.prob('1')
+            try:
+                record.impact_score = record.probability * (float(record.followers)+1)
+            except Exception as e:
+                record.impact_score = record.probability
+            if record.probability > 0.85:
+                print record.message,'\n','impact score: ',record.impact_score
+        except Exception as e:
+            print 'Error: %r' %e   
+
+    def classify_live_stream_demo(self):
+        with open(self.test_data_csv,'rb') as csvfile:
+            for line in csvfile.readlines():
+                self.classify_message_live_stream(line)
 
 if __name__=='__main__':
     training_data_csv = 'data/trainData_topic_party.csv'
@@ -153,4 +188,5 @@ if __name__=='__main__':
     min_frequency = 3
     topNum = 10
     ranker = Ranker(training_data_csv,test_data_csv,topNum=topNum)
-    ranker.demo_print_topN_message()
+    # ranker.demo_print_topN_message()
+    ranker.classify_live_stream_demo()
